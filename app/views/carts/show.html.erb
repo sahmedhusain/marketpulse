@@ -69,7 +69,7 @@
 
               <div class="buttons">
                 <%= button_to "Empty cart", cart_path(@cart), method: :delete, data: { confirm: "Are you sure?" }, class: "button is-danger" %>
-                <%= link_to "Proceed to Checkout", "#checkout-modal", class: "button is-success", onclick: "document.getElementById('checkout-modal').classList.add('is-active')" %>
+                <button type="button" class="button is-success" onclick="event.preventDefault(); document.getElementById('checkout-modal').classList.add('is-active')">Proceed to Checkout</button>
               </div>
             </div>
           </div>
@@ -79,14 +79,15 @@
   </div>
 </section>
 
-<!-- Bonus Payment Modal -->
+<!-- Payment Modal -->
 <div class="modal" id="checkout-modal">
-  <div class="modal-background" onclick="document.getElementById('checkout-modal').classList.remove('is-active')"></div>
+  <div class="modal-background" onclick="event.preventDefault(); document.getElementById('checkout-modal').classList.remove('is-active')"></div>
   <div class="modal-card">
     <header class="modal-card-head">
       <p class="modal-card-title">Checkout & Payment</p>
-      <button class="delete" aria-label="close" onclick="document.getElementById('checkout-modal').classList.remove('is-active')"></button>
+      <button type="button" class="delete" aria-label="close" onclick="event.preventDefault(); document.getElementById('checkout-modal').classList.remove('is-active')"></button>
     </header>
+
     <section class="modal-card-body">
       <div class="notification is-info is-light mb-4">
         Order Total: <strong><%= number_to_currency(@cart.total_price) %></strong>

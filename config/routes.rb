@@ -10,6 +10,8 @@ Rails.application.routes.draw do
   devise_for :users, controllers: {
     registrations: 'registrations'
   }
+  get '/.well-known/*path', to: proc { [204, {}, ['']] }
   root 'products#index'
 end
+
 

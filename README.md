@@ -1,129 +1,122 @@
-# Rails e-Commerce Shop
+# Shop 🛒
 
-A full-featured, secure, and modular e-Commerce web application built using **Ruby on Rails** and **Bulma CSS**.
+[![Ruby](https://img.shields.io/badge/Ruby-3.0.0-CC342D?style=flat&logo=ruby)](https://www.ruby-lang.org/)
+[![Ruby on Rails](https://img.shields.io/badge/Ruby_on_Rails-6.1.3-CC0000?style=flat&logo=ruby-on-rails)](https://rubyonrails.org/)
+[![SQLite](https://img.shields.io/badge/Database-SQLite3-003B57?style=flat&logo=sqlite)](https://www.sqlite.org/)
+[![Bulma CSS](https://img.shields.io/badge/UI_Framework-Bulma-00D1B2?style=flat&logo=bulma)](https://bulma.io/)
+[![Devise](https://img.shields.io/badge/Auth-Devise-4.7-black)](https://github.com/heartcombo/devise)
 
-## Table of Contents
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack & Dependencies](#tech-stack--dependencies)
-- [Getting Started & Installation](#getting-started--installation)
-- [Project Architecture & Infrastructure](#project-architecture--infrastructure)
-- [Bonus Features](#bonus-features)
+Shop is a full-stack e-Commerce marketplace web application built with Ruby on Rails and Bulma CSS. It allows users to register accounts, post item listings with image uploads, manage personal product ads, and shop using an interactive session-persistent shopping cart.
 
 ---
 
-## Overview
-This application provides a complete marketplace platform where users can create accounts, list products for sale with specs and images, manage their listings, and shop using an interactive session-persisted shopping cart.
+## ⚡ Key Features
+
+- **User Authentication**: User registration and account management powered by Devise with custom name attributes and credential validation.
+- **Product Ad Creator**: Authenticated users can list products specifying title, brand, model, condition, finish, price, description, and image uploads via CarrierWave.
+- **Seller Attribution**: Product cards in the marketplace display seller names ("Sold by: [Seller]") directly on homepage product cards without requiring buyers to open each ad.
+- **Ownership Authorization**: Strict server-side authorization guards and client-side controls ensure that only the user who created an ad can edit or delete it.
+- **Direct Add-to-Cart**: Quick "Add to Cart" action buttons directly on homepage product grid cards and product detail pages.
+- **Session Cart Persistence**: Guest shopping carts persist via session storage and carry over active items when a guest signs in.
+- **Granular Cart Management**: Adjust item quantities (`+` / `-`), remove individual line items, calculate real-time order totals, and trigger auto-dismissing toast notifications (`"Added to your cart"`, `"Removed from your cart"`).
+- **Empty Cart Safeguard**: Interactive confirmation modal ("Are you sure?") before clearing cart contents and redirecting to the storefront.
+- **Checkout Flow**: Simulated credit card checkout modal on the cart page for order completion.
 
 ---
 
-## Features
+## 🏗 Data & Request Flow
 
-### 1. User Authentication (Devise)
-- Custom `RegistrationsController` inheriting from `Devise::RegistrationsController`.
-- Secure parameters handling for account signup (`name`, `email`, `password`, `password_confirmation`) and account editing (`current_password`).
-
-### 2. Product Management & Ownership Controls
-- **Sell Products**: Authenticated users can list items specifying title, model, description, brand, condition, finish, price, and image uploads.
-- **Seller Visibility**: Displays seller name ("Sold by: [Name]") on every product listing card without having to open the ad.
-- **Authorization Guards**: Server-side controller guards and client-side view filters ensure that **only the creator/owner of an ad** can edit or delete it.
-
-### 3. Shopping Cart System
-- **Session-Based Cart (`CurrentCart` Concern)**: Cart persists across guest browsing and automatically transfers items when a guest signs in.
-- **Live Cart Badge**: Header navigation bar features a dynamic cart icon showing total items in cart.
-- **Cart Management**: Add items, adjust item quantities (`+` / `-`), remove individual line items, or empty the entire cart.
-- **Auto-Dismiss Notifications**: Flash messages `"Added to your cart"` and `"Removed from your cart"` automatically fade out after a short duration.
-- **Empty Cart Confirmation**: Prompts an `"Are you sure?"` confirmation modal before clearing cart items and redirecting to homepage.
-
----
-
-## Tech Stack & Dependencies
-
-- **Framework**: Ruby on Rails 6.1
-- **Language**: Ruby 2.6+ / 3.0+
-- **Database**: SQLite3
-- **Authentication**: Devise gem
-- **Styling**: Bulma CSS & Sass
-- **File Uploads**: CarrierWave & ActiveStorage
-
----
-
-## Getting Started & Installation
-
-Follow these steps to run the application locally on your system.
-
-### Prerequisites
-Make sure you have Ruby and Bundler installed on your system.
-```bash
-ruby -v
-bundle -v
+```mermaid
+flowchart TD
+    A[Visitor Browse Store / Products] --> B{Add Item to Cart?}
+    B -->|Yes| C[CurrentCart Concern: Fetch / Create Cart in Session]
+    C --> D[LineItemsController: Add or Increment Product Quantity]
+    D --> E[Render Auto-Dismiss Notification Toast]
+    E --> F[Update Nav Header Cart Counter Badge]
+    A --> G{User Actions: Sign Up / Sign In}
+    G --> H[Devise RegistrationsController: Preserve Cart Session]
+    H --> I[Authenticated User Seller Dashboard]
+    I --> J{Create / Edit / Delete Ad}
+    J -->|Authorize Owner| K[ProductsController Guard: Check current_user == product.user]
 ```
 
-### Installation Steps
+---
 
-1. **Navigate to the Project Directory**:
+## ⚙️ How to Run Locally
+
+### Prerequisites
+- **Ruby**: version 2.6.0 or higher (recommended: 3.0.0)
+- **Bundler**: `gem install bundler`
+- **SQLite3**: installed on host system
+
+### Installation & Execution Steps
+
+1. **Clone & Navigate to Project**:
    ```bash
+   git clone <repository-url>
    cd shop
    ```
 
-2. **Install Gem Dependencies**:
+2. **Install Dependencies**:
    ```bash
    bundle install
-   # Or if using vendored bundle path:
+   # Or using vendored path:
    BUNDLE_PATH=vendor/bundle bundle install
    ```
 
-3. **Setup Database & Seed Data**:
+3. **Set Up Database & Run Migrations**:
    ```bash
    bundle exec rails db:migrate
    bundle exec rails db:seed
    ```
 
-4. **Start the Rails Development Server**:
+4. **Launch Development Server**:
    ```bash
    bundle exec rails s
    ```
 
-5. **Access the Application**:
-   Open your browser and navigate to `http://localhost:3000`.
+5. **Open Application**:
+   Open your browser and go to `http://localhost:3000`.
 
 ---
 
-## Project Architecture & Infrastructure
-
-The project structure enforces strict separation of concerns into clean, modular files:
+## 📂 Project Structure
 
 ```
-app/
-├── controllers/
-│   ├── concerns/
-│   │   └── current_cart.rb        # Session cart management concern
-│   ├── carts_controller.rb        # Cart view and clear actions
-│   ├── line_items_controller.rb   # Add, remove, & decrement cart items
-│   ├── products_controller.rb     # Product CRUD & authorization checks
-│   └── registrations_controller.rb# Custom Devise parameters
-├── helpers/
-│   └── products_helper.rb         # Product seller & ownership helpers
-├── models/
-│   ├── cart.rb                    # Cart model & total calculation methods
-│   ├── line_item.rb               # LineItem relationship & subtotals
-│   ├── product.rb                 # Product validations & image uploader
-│   └── user.rb                    # User authentication associations
-└── views/
-    ├── carts/                     # Cart table & checkout views
-    ├── layouts/                   # Application layout with navbar badge & toast JS
-    └── products/                  # Product cards, detail show, and form partials
+shop/
+├── app/
+│   ├── controllers/
+│   │   ├── concerns/
+│   │   │   └── current_cart.rb         # Session cart persistence helper
+│   │   ├── carts_controller.rb         # Cart views & clear action
+│   │   ├── line_items_controller.rb    # Add, remove, and quantity controls
+│   │   ├── products_controller.rb      # Product CRUD & authorization guards
+│   │   ├── registrations_controller.rb # Custom Devise registration parameters
+│   │   └── store_controller.rb         # Store index handler
+│   ├── helpers/
+│   │   └── products_helper.rb          # Seller attribution & owner checks
+│   ├── models/
+│   │   ├── cart.rb                     # Cart totals & line items association
+│   │   ├── line_item.rb                # Product line item subtotals
+│   │   ├── product.rb                  # Product validations & image uploader
+│   │   └── user.rb                     # User authentication model
+│   ├── uploaders/
+│   │   └── image_uploader.rb           # CarrierWave image uploader
+│   └── views/
+│       ├── carts/                      # Shopping cart page & checkout modal
+│       ├── devise/                     # Authentication & registration forms
+│       ├── layouts/                    # Application wrapper with cart badge & toasts
+│       └── products/                   # Storefront grid, detail views, and ad form
+├── config/
+│   └── routes.rb                       # Application routes & resource mappings
+├── db/
+│   ├── migrate/                        # Database migrations (users, products, carts, line_items)
+│   └── seeds.rb                        # Initial database seed records
+└── vendor/
+    └── bundle/                         # Pre-packaged gem dependencies
 ```
 
 ---
 
-## Bonus Features
-- **Direct Grid Add to Cart**: Add products to cart directly from homepage product cards without needing to open the product detail page.
-- **Quantity Adjustments**: Increment and decrement product line item quantities directly inside cart view.
-- **Expanded Brands & Finishes**: Extended brand choices (Apple, Samsung, Sony, Dell, Nike, Adidas) and finishes (Silver, Gold, SpaceGray).
-- **Simulated Payment Modal**: Interactive modal on cart page for credit card checkout simulation.
-
----
-
-## License & Credits
-Developed as part of the Reboot01 curriculum.
+## 📝 License
+Distributed under the MIT License. See `LICENSE.md` for details.

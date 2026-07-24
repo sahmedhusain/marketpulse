@@ -4,7 +4,6 @@
 [![Ruby on Rails](https://img.shields.io/badge/Ruby_on_Rails-6.1.3-CC0000?style=flat&logo=ruby-on-rails)](https://rubyonrails.org/)
 [![SQLite](https://img.shields.io/badge/Database-SQLite3-003B57?style=flat&logo=sqlite)](https://www.sqlite.org/)
 [![Bulma CSS](https://img.shields.io/badge/UI_Framework-Bulma-00D1B2?style=flat&logo=bulma)](https://bulma.io/)
-[![Devise](https://img.shields.io/badge/Auth-Devise-4.7-black)](https://github.com/heartcombo/devise)
 
 Shop is a full-stack e-Commerce marketplace web application built with Ruby on Rails and Bulma CSS. It allows users to register accounts, post item listings with image uploads, manage personal product ads, and shop using an interactive session-persistent shopping cart.
 

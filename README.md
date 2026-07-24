@@ -45,11 +45,11 @@ flowchart TD
 ## ⚙️ How to Run Locally
 
 ### Prerequisites
-- **Ruby**: version 2.6.0 or higher (recommended: 3.0.0)
-- **Bundler**: `gem install bundler`
-- **SQLite3**: installed on host system
+- **Ruby**: version 2.6.0+ or 3.0.0+ (installed via Homebrew or system)
+- **ImageMagick**: required for CarrierWave image resizing (`brew install imagemagick`)
+- **SQLite3**: database installed on host system
 
-### Installation & Execution Steps
+### Setup & Execution Steps
 
 1. **Clone & Navigate to Project**:
    ```bash
@@ -57,26 +57,30 @@ flowchart TD
    cd shop
    ```
 
-2. **Install Dependencies**:
+2. **Configure Environment PATH (macOS / Homebrew)**:
    ```bash
-   bundle install
-   # Or using vendored path:
-   BUNDLE_PATH=vendor/bundle bundle install
+   export PATH="/opt/homebrew/bin:/opt/homebrew/opt/ruby/bin:$PATH"
    ```
 
-3. **Set Up Database & Run Migrations**:
+3. **Install Dependencies**:
    ```bash
-   bundle exec rails db:migrate
-   bundle exec rails db:seed
+   USE_FREEDESKTOP_PLACEHOLDER=true NOKOGIRI_USE_SYSTEM_LIBRARIES=1 bundle install
    ```
 
-4. **Launch Development Server**:
+4. **Database Setup & Seeding**:
    ```bash
-   bundle exec rails s
+   DISABLE_SPRING=1 bundle exec rails db:migrate
+   DISABLE_SPRING=1 bundle exec rails db:seed
    ```
 
-5. **Open Application**:
-   Open your browser and go to `http://localhost:3000`.
+5. **Launch Development Server**:
+   ```bash
+   DISABLE_SPRING=1 bundle exec rails s
+   ```
+
+6. **Access Application**:
+   Open your browser and navigate to `http://localhost:3000`.
+
 
 ---
 

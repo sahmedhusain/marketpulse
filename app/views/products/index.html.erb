@@ -15,13 +15,18 @@
 
     <div class="product border-light">
       <div class="product-thumb">
-      <%= link_to image_tag(product.image_url(:thumb)), product %>
+      <% if product.image.present? %>
+        <%= link_to image_tag(product.image_url(:thumb)), product %>
+      <% else %>
+        <%= link_to image_tag("computer.jpg"), product %>
+      <% end %>
       <% if product.condition? %>
         <div class="condition">
           <span class="tag is-dark"><%= product.condition %></span>
         </div>
       <% end %>
       </div>
+
 
 
     <div class="pa3">

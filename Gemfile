@@ -3,6 +3,16 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '>= 2.6.0'
 
+gem 'ostruct'
+gem 'logger'
+gem 'mutex_m'
+gem 'base64'
+gem 'bigdecimal'
+gem 'benchmark'
+
+
+
+
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.1.1'

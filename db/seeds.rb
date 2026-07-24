@@ -5,14 +5,13 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-user = User.new(
-    id: 2,
-    name: "Random User",
-    email: "user@example.com",
-    password: "password",
-    password_confirmation: "password"
-  )
-  user.save!
+user = User.find_or_create_by!(email: "user@example.com") do |u|
+  u.id = 2
+  u.name = "Random User"
+  u.password = "password"
+  u.password_confirmation = "password"
+end
+
   
   Product.create!([{
     title: "Watch",

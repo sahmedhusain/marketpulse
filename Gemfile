@@ -9,6 +9,10 @@ gem 'mutex_m'
 gem 'base64'
 gem 'bigdecimal'
 gem 'benchmark'
+gem 'net-smtp'
+gem 'net-imap'
+gem 'net-pop'
+
 
 
 

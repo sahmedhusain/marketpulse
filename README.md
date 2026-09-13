@@ -31,6 +31,14 @@
 
 ---
 
+## 🖼️ Marketplace Product Catalog
+
+| Fender Guitar | Ferrari Model | Fossil Watch | Opel Vintage |
+| :---: | :---: | :---: | :---: |
+| ![Fender](app/assets/images/fender.jpg) | ![Ferrari](app/assets/images/ferrari.jpeg) | ![Fossil](app/assets/images/fossil.jpg) | ![Opel](app/assets/images/opel.jpeg) |
+
+---
+
 ## 🏗️ System Architecture
 
 ```mermaid
@@ -49,8 +57,9 @@ graph TD
     I -- Yes --> J[Execute Product CRUD]
     I -- No --> K[Redirect & Render Access Denied Flash]
     
-    H & J --> L[(SQLite Database)]
-```
+    H --> L[(SQLite Database)]
+    J --> L
+```,StartLine:33,TargetContent:
 
 ---
 

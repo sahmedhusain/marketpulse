@@ -1,59 +1,99 @@
-# Shop 🛒
+# 🛒 MarketPulse
 
 [![Ruby](https://img.shields.io/badge/Ruby-3.0.0-CC342D?style=flat&logo=ruby)](https://www.ruby-lang.org/)
 [![Ruby on Rails](https://img.shields.io/badge/Ruby_on_Rails-6.1.3-CC0000?style=flat&logo=ruby-on-rails)](https://rubyonrails.org/)
 [![SQLite](https://img.shields.io/badge/Database-SQLite3-003B57?style=flat&logo=sqlite)](https://www.sqlite.org/)
 [![Bulma CSS](https://img.shields.io/badge/UI_Framework-Bulma-00D1B2?style=flat&logo=bulma)](https://bulma.io/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE.md)
 
-Shop is a full-stack e-Commerce marketplace web application built with Ruby on Rails and Bulma CSS. It allows users to register accounts, post item listings with image uploads, manage personal product ads, and shop using an interactive session-persistent shopping cart.
-
----
-
-## ⚡ Key Features
-
-- **User Authentication**: User registration and account management powered by Devise with custom name attributes and credential validation.
-- **Product Ad Creator**: Authenticated users can list products specifying title, brand, model, condition, finish, price, description, and image uploads via CarrierWave.
-- **Seller Attribution**: Product cards in the marketplace display seller names ("Sold by: [Seller]") directly on homepage product cards without requiring buyers to open each ad.
-- **Ownership Authorization**: Strict server-side authorization guards and client-side controls ensure that only the user who created an ad can edit or delete it.
-- **Direct Add-to-Cart**: Quick "Add to Cart" action buttons directly on homepage product grid cards and product detail pages.
-- **Session Cart Persistence**: Guest shopping carts persist via session storage and carry over active items when a guest signs in.
-- **Granular Cart Management**: Adjust item quantities (`+` / `-`), remove individual line items, calculate real-time order totals, and trigger auto-dismissing toast notifications (`"Added to your cart"`, `"Removed from your cart"`).
-- **Empty Cart Safeguard**: Interactive confirmation modal ("Are you sure?") before clearing cart contents and redirecting to the storefront.
-- **Checkout Flow**: Simulated credit card checkout modal on the cart page for order completion.
+**MarketPulse** is a full-stack e-Commerce marketplace web application built with Ruby on Rails and Bulma CSS. It enables users to create accounts, list product advertisements with CarrierWave image uploads, manage personal product inventories, track seller attributions, and shop using session-persistent shopping carts.
 
 ---
 
-## 🏗 Data & Request Flow
+## ⚡ Key Highlights
+
+- **Authentication & User Accounts**: User registration, authentication, and profile settings powered by Devise with custom parameter sanitization.
+- **Product Ad Creator & Inventory**: Authenticated sellers can create, edit, and delete product listings with brand, model, condition, finish, price, and CarrierWave image uploads.
+- **Seller Attribution Guards**: Marketplace product grid cards display seller names ("Sold by: [Seller]") directly on storefront product cards with strict server-side ownership authorization guards.
+- **Session-Persistent Cart Concern**: Guest shopping carts persist via session storage and seamlessly transfer active line items when a guest logs in.
+- **Granular Cart & Checkout Flow**: Adjust line item quantities (`+` / `-`), remove items, compute real-time order totals, trigger auto-dismissing toast notifications, and simulate checkout modal completion.
+
+---
+
+## 📋 Table of Contents
+
+- [Key Highlights](#-key-highlights)
+- [System Architecture](#-system-architecture)
+- [Cart Session & Checkout Sequence](#-cart-session--checkout-sequence)
+- [Setup & Execution](#-setup--execution)
+- [Project Directory Structure](#-project-directory-structure)
+- [License](#-license)
+
+---
+
+## 🏗️ System Architecture
 
 ```mermaid
-flowchart TD
-    A[Visitor Browse Store / Products] --> B{Add Item to Cart?}
-    B -->|Yes| C[CurrentCart Concern: Fetch / Create Cart in Session]
-    C --> D[LineItemsController: Add or Increment Product Quantity]
-    D --> E[Render Auto-Dismiss Notification Toast]
-    E --> F[Update Nav Header Cart Counter Badge]
-    A --> G{User Actions: Sign Up / Sign In}
-    G --> H[Devise RegistrationsController: Preserve Cart Session]
-    H --> I[Authenticated User Seller Dashboard]
-    I --> J{Create / Edit / Delete Ad}
-    J -->|Authorize Owner| K[ProductsController Guard: Check current_user == product.user]
+graph TD
+    A[Storefront Visitor / User] --> B[Rails Routing & Dispatcher]
+    
+    B --> C{Action Type?}
+    C -- Browse / Cart --> D[StoreController & CartsController]
+    C -- Auth / Account --> E[Devise RegistrationsController]
+    C -- Manage Ads --> F[ProductsController]
+    
+    D --> G[CurrentCart Concern: Session Storage Manager]
+    G --> H[LineItemsController: Add / Increment / Remove Items]
+    
+    F -->|Authorization Check| I{current_user == product.user?}
+    I -- Yes --> J[Execute Product CRUD]
+    I -- No --> K[Redirect & Render Access Denied Flash]
+    
+    H & J --> L[(SQLite Database)]
 ```
 
 ---
 
-## ⚙️ How to Run Locally
+## 📐 Cart Session & Checkout Sequence
+
+```mermaid
+sequenceDiagram
+    participant Visitor
+    participant Store as Store Front UI
+    participant Cart as CurrentCart Concern
+    participant DB as SQLite Database
+    participant Auth as Devise Auth
+
+    Visitor->>Store: Click "Add to Cart" on Product Card
+    Store->>Cart: Retrieve Session cart_id or Create New Cart
+    Cart->>DB: Find / Create LineItem (Product ID, Quantity)
+    DB-->>Store: Updated LineItems & Total Price
+    Store-->>Visitor: Render Toast Notification ("Added to your cart") & Update Header Counter
+    
+    Visitor->>Auth: Sign In / Register
+    Auth->>Cart: Transfer Active Session Cart to Authenticated User
+    Visitor->>Store: Open Cart Page & Click "Simulate Checkout"
+    Store-->>Visitor: Render Checkout Modal & Order Confirmation Summary
+```
+
+---
+
+## 🚀 Setup & Execution
 
 ### Prerequisites
-- **Ruby**: version 2.6.0+ or 3.0.0+ (installed via Homebrew or system)
-- **ImageMagick**: required for CarrierWave image resizing (`brew install imagemagick`)
-- **SQLite3**: database installed on host system
 
-### Setup & Execution Steps
+- **Ruby**: Version 2.7+ or 3.0+ installed.
+- **ImageMagick**: Required for CarrierWave image resizing (`brew install imagemagick`).
+- **SQLite3**: Relational database installed.
 
-1. **Clone & Navigate to Project**:
+---
+
+### Setup & Run
+
+1. **Clone Repository**:
    ```bash
-   git clone <repository-url>
-   cd shop
+   git clone https://github.com/sahmedhusain/marketpulse.git
+   cd marketpulse
    ```
 
 2. **Configure Environment PATH (macOS / Homebrew)**:
@@ -61,65 +101,53 @@ flowchart TD
    export PATH="/opt/homebrew/bin:/opt/homebrew/opt/ruby/bin:$PATH"
    ```
 
-3. **Install Dependencies**:
+3. **Install Gem Dependencies**:
    ```bash
    USE_FREEDESKTOP_PLACEHOLDER=true NOKOGIRI_USE_SYSTEM_LIBRARIES=1 bundle install
    ```
 
-4. **Database Setup & Seeding**:
+4. **Database Migrations & Seed Data**:
    ```bash
    DISABLE_SPRING=1 bundle exec rails db:migrate
    DISABLE_SPRING=1 bundle exec rails db:seed
    ```
 
-5. **Launch Development Server**:
+5. **Start Rails Server**:
    ```bash
    DISABLE_SPRING=1 bundle exec rails s
    ```
-
-6. **Access Application**:
-   Open your browser and navigate to `http://localhost:3000`.
-
+   *MarketPulse will start at `http://localhost:3000`.*
 
 ---
 
-## 📂 Project Structure
+## 📂 Project Directory Structure
 
 ```
-shop/
+marketpulse/
 ├── app/
 │   ├── controllers/
-│   │   ├── concerns/
-│   │   │   └── current_cart.rb         # Session cart persistence helper
-│   │   ├── carts_controller.rb         # Cart views & clear action
-│   │   ├── line_items_controller.rb    # Add, remove, and quantity controls
-│   │   ├── products_controller.rb      # Product CRUD & authorization guards
-│   │   ├── registrations_controller.rb # Custom Devise registration parameters
-│   │   └── store_controller.rb         # Store index handler
+│   │   ├── concerns/current_cart.rb    # Session cart persistence module
+│   │   ├── carts_controller.rb        # Cart views & clear actions
+│   │   ├── line_items_controller.rb   # Line item quantity controls
+│   │   ├── products_controller.rb     # Product CRUD & owner authorization
+│   │   └── store_controller.rb        # Marketplace storefront controller
 │   ├── helpers/
-│   │   └── products_helper.rb          # Seller attribution & owner checks
+│   │   └── products_helper.rb         # Seller attribution & ownership checks
 │   ├── models/
-│   │   ├── cart.rb                     # Cart totals & line items association
-│   │   ├── line_item.rb                # Product line item subtotals
-│   │   ├── product.rb                  # Product validations & image uploader
-│   │   └── user.rb                     # User authentication model
+│   │   ├── cart.rb                    # Cart total calculations & line items association
+│   │   ├── line_item.rb               # Line item subtotals
+│   │   ├── product.rb                 # Product validations & image uploader
+│   │   └── user.rb                    # Devise user authentication model
 │   ├── uploaders/
-│   │   └── image_uploader.rb           # CarrierWave image uploader
-│   └── views/
-│       ├── carts/                      # Shopping cart page & checkout modal
-│       ├── devise/                     # Authentication & registration forms
-│       ├── layouts/                    # Application wrapper with cart badge & toasts
-│       └── products/                   # Storefront grid, detail views, and ad form
-├── config/
-│   └── routes.rb                       # Application routes & resource mappings
-├── db/
-│   ├── migrate/                        # Database migrations (users, products, carts, line_items)
-│   └── seeds.rb                        # Initial database seed records
-└── vendor/
-    └── bundle/                         # Pre-packaged gem dependencies
+│   │   └── image_uploader.rb          # CarrierWave image processor
+│   └── views/                         # Bulma storefront, cart, & modal views
+├── config/                            # Rails configuration & routing maps
+├── db/                                # Migrations and seed file
+└── README.md                          # Documentation
 ```
 
 ---
 
-## 📝 License
-Distributed under the MIT License. See `LICENSE.md` for details.
+## 📄 License
+
+Distributed under the MIT License. See [LICENSE](LICENSE.md) for details.
